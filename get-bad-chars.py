@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-def get_bad_chars(hexdump):
+def get_bad_chars(hexdump: str, verbose: bool = False):
     hexdump.replace("\n", " ")
     hexdump.strip()
     chars = hexdump.split()
@@ -24,7 +24,8 @@ def get_bad_chars(hexdump):
         s = value + value2
         if s % 2 == 0:  # Character is missing
             missing = "\\x" + format(int(s / 2), "02x")
-            print(f"{missing} is missing. Likely a bad character.")
+            if verbose:
+                print(f"{missing} is missing. Likely a bad character.")
             badchars.append(missing)
         i += 1
 
@@ -37,6 +38,7 @@ def main():
     parser = argparse.ArgumentParser(description='Get bad characters from hexdump. '
                                                  'At the moment, only missing characters are considered bad.')
     parser.add_argument("file", help="File containing hexdump")
+    parser.add_argument("-v", "--verbose", help="Increase verbosity", action="store_true")
 
     args = parser.parse_args()
 
@@ -44,7 +46,7 @@ def main():
     with open(dump_file, "r") as f:
         hexdump = f.read()
 
-    badchars = get_bad_chars(hexdump)
+    badchars = get_bad_chars(hexdump, args.verbose)
     print(''.join(badchars))
 
 
