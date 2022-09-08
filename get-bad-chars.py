@@ -10,23 +10,27 @@ def get_bad_chars(hexdump: str, verbose: bool = False):
     i = start
     while i < len(chars) - 1:
         char = chars[i]
-        value = int(char, 16)
-        if char == '00':
-            i += 1
-            continue
-
         char2 = chars[i + 1]
-        value2 = int(char2, 16)
+        char_int = int(char, 16)
+        char_int2 = int(char2, 16)
+        
         if char2 == '00':
+            missing = format(char_int + 1, "02x")
+            chars[i + 1] = missing  # Update null byte in hexdump
+            badchar = "\\x" + missing
+            if verbose:
+                print(f"{badchar} was null. Probably a bad character.")
+            badchars.append(badchar)
             i += 1
             continue
 
-        s = value + value2
+        s = char_int + char_int2
         if s % 2 == 0:  # Character is missing
             missing = "\\x" + format(int(s / 2), "02x")
             if verbose:
-                print(f"{missing} is missing. Likely a bad character.")
+                print(f"{missing} is missing. Probably a bad character.")
             badchars.append(missing)
+
         i += 1
 
     return badchars
