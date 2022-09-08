@@ -32,9 +32,15 @@ def get_bad_chars(hexdump):
 
 
 def main():
-    import sys
+    import argparse
 
-    dump_file = sys.argv[1]
+    parser = argparse.ArgumentParser(description='Get bad characters from hexdump. '
+                                                 'At the moment, only missing characters are considered bad.')
+    parser.add_argument("file", help="File containing hexdump")
+
+    args = parser.parse_args()
+
+    dump_file = args.file
     with open(dump_file, "r") as f:
         hexdump = f.read()
 
@@ -44,3 +50,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
