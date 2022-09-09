@@ -22,23 +22,19 @@ def get_bad_chars(hexdump: str, verbose: bool = False):
         char_int = int(char, 16)
         char_int2 = int(char2, 16)
 
-        # Next byte is null, give it the correct value according to the current byte
-        if char2 == '00':
-            missing = format(char_int + 1, "02x")
-            chars[i + 1] = missing  # Update null byte in hexdump
-            badchar = "\\x" + missing
+        if char2 == '00':  # Next byte is null, give it the correct value according to the current byte
+            null_value = format(char_int + 1, "02x")
+            chars[i + 1] = null_value  # Update null byte in hexdump
+            missing = "\\x" + null_value
             if verbose:
-                print(f"{badchar} was null. Probably a bad character.")
-            badchars.append(badchar)
-            i += 1
-            continue
-
-        # Characters missing from the dump
-        for j in range(char_int + 1, char_int2):
-            missing = "\\x" + format(int(j), "02x")
-            if verbose:
-                print(f"{missing} is missing. Probably a bad character.")
+                print(f"{missing} was null. Probably a bad character.")
             badchars.append(missing)
+        else:  # Next byte is not null
+            for j in range(char_int + 1, char_int2):  # Check for missing bytes
+                missing = "\\x" + format(int(j), "02x")
+                if verbose:
+                    print(f"{missing} is missing. Probably a bad character.")
+                badchars.append(missing)
 
         i += 1
 
